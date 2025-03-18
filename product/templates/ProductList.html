@@ -1,40 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product List</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        th, td {
-            width: 250px;
-            height: 100px;
-            text-align: center;
-        }
+    <link rel="stylesheet" href="{% static 'ProductList.css' %}">
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        .modal input {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 10px;
-        }
-        .modal button {
-            width: 45%;
 
-        }
-    </style>
+
 </head>
 
 <body>
@@ -82,151 +57,9 @@
         <button onclick="updateProduct()">Update</button>
     </div>
 
-    <script>
-        function AddProductPopup() {
-            document.getElementById("addProductModal").style.display = "block";
-        }
 
-        function closePopup() {
-            document.getElementById("addProductModal").style.display = "none";
-        }
 
-        function showUpdatePopup(product) {
-            document.getElementById("ProductId").value = product.id;
-            document.getElementById("updateProductName").value = product.name;
-            document.getElementById("updateProductPrice").value = product.price;
-            document.getElementById("updateProductStock").value = product.stock;
-            document.getElementById("updateProductImageUrl").value = product.image_url;
-            document.getElementById("updateProductModal").style.display = "block";
-        }
-
-        function closeUpdatePopup() {
-            document.getElementById("updateProductModal").style.display = "none";
-        }
-
-        function getCSRFToken() {
-            const name = "csrftoken=";
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const cookies = decodedCookie.split(';');
-
-            for (let i = 0; i < cookies.length; i++) {
-                let c = cookies[i].trim();
-                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-            }
-            return "";
-        }
-
-        function addProduct() {
-            const name = $("#productName").val();
-            const price = $("#productPrice").val();
-            const stock = $("#productStock").val();
-            const image_url = $("#productImageUrl").val();
-            const csrftoken = getCSRFToken();
-
-            if (!name || !price || !stock || !image_url) {
-                alert("Please fill all fields!");
-                return;
-            }
-
-            $.ajax({
-                url: 'http://127.0.0.1:8000/products/',
-                method: 'POST',
-                contentType: "application/json",
-                headers: { "X-CSRFToken": csrftoken },
-                data: JSON.stringify({ name, price, stock, image_url }),
-                success: function() {
-                    alert("Product added successfully!");
-                    closePopup();
-                    allproducts();
-                },
-                error: function(xhr) {
-                    alert("Error adding product: " + xhr.responseText);
-                }
-            });
-        }
-
-        function allproducts() {
-            $.ajax({
-                url: 'http://127.0.0.1:8000/products/',
-                method: 'GET',
-                success: function(data) {
-                    const productslist = $('#productslist');
-                    productslist.empty();
-
-                    data.forEach(product => {
-                        productslist.append(`
-                            <tr>
-                                <td><img src="${product.image_url}" width="150"></td>
-                                <td>${product.name}</td>
-                                <td>${product.price}</td>
-                                <td>${product.stock}</td>
-                                <td>
-                                    <button onclick='showUpdatePopup(${JSON.stringify(product)})'>Update</button>
-                                    <button onclick="deleteProduct(${product.id})">Delete</button>
-                                </td>
-                            </tr>
-                        `);
-                    });
-                },
-                error: function() {
-                    alert("Error fetching product list.");
-                }
-            });
-        }
-
-        function updateProduct() {
-            const productId = $("#ProductId").val();
-            const name = $("#updateProductName").val();
-            const price = $("#updateProductPrice").val();
-            const stock = $("#updateProductStock").val();
-            const image_url = $("#updateProductImageUrl").val();
-            const csrftoken = getCSRFToken();
-
-            if (!name || !price || !stock || !image_url) {
-                alert("Please fill all fields!");
-                return;
-            }
-
-            $.ajax({
-                url: `http://127.0.0.1:8000/products/${productId}/`,
-                method: 'PUT',
-                contentType: "application/json",
-                headers: { "X-CSRFToken": csrftoken },
-                data: JSON.stringify({ name, price, stock, image_url }),
-                success: function() {
-                    alert("Product updated successfully!");
-                    closeUpdatePopup();
-                    allproducts();
-                },
-                error: function(xhr) {
-                    alert("Error updating product: " + xhr.responseText);
-                }
-            });
-        }
-
-        function deleteProduct(productId) {
-            const csrftoken = getCSRFToken();
-
-            if (!confirm("Are you sure you want to delete this product?")) return;
-
-            $.ajax({
-                url: `http://127.0.0.1:8000/products/${productId}/`,
-                method: 'DELETE',
-                headers: { "X-CSRFToken": csrftoken },
-                success: function() {
-                    alert("Product deleted successfully!");
-                    allproducts();
-                },
-                error: function(xhr) {
-                    alert("Error deleting product: " + xhr.responseText);
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            allproducts();
-        });
-    </script>
+<script src="{% static 'ProductList.js' %}"></script>
 
 </body>
 
